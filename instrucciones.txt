@@ -1,0 +1,164 @@
+ejecutar npm start
+https://www.youtube.com/watch?v=oT-feDPuJmk
+1. Crear la estructura del proyecto con npx-create-react-app nombreProyect dentro de la carpeta de proyecto escribiendo
+ese comando en el terminal
+2. En src creamos folder components y ahi todoApp.js
+Ahi puse una funcion y el componente ahí con mayuscula (TodoApp)
+export default function TodoApp(){
+    return <div>Hola</div>;
+}
+3. En src>app.js borro todo lo que hay dentro del return y mando llamar mi 
+componente TodoApp
+4. cd listatareas o el cd necesario para entrar a la carpeta padre y ahi npm start para ejecutar.
+
+Asi se pone un componente
+5. Ahora borramos el hola y al div le ponemos la clase className
+no class como en html, es porque esto es una propiedad de jsx
+6. creo un input como de formulario normal y añado clases a cada cosita
+export default function TodoApp(){
+    return ( <div className="todoContainer" >
+        <form className="todoCreateForm">
+            {/* Campo de ingreso de texto: */}
+            <input className="todoInput"/>
+            {/* El botón aquí tambn como input */}
+            <input type="submit" value="Create todo" className="buttonCreate"></input>
+        </form>
+
+    </div>
+    );
+}
+
+----MANEJO DEL ESTADO--------
+7. Vamos a usar hooks para poder usar el estado, un hook es
+una funcion para actualizar info de las variables o del estado de la info en la apppara que 
+cuando suceda un evento react actualice la interfaz de acuerdo a los valores asignados
+Por ejemplo si ingrese la pag debe mostrarme loageado  si añadi cosas debe aparecer lleno el carrito mientras sigo navegando    
+8.Vamos a empezar con el hook usestate que permite definir un estado inicial para luego 
+manipularlo, usestate es una funcion que regresa un arreglo de 2 elementos que podrian ser algo asi como un setter y un getter
+el getter sera nuestra variable (title) o sea que solo regresara el valor de ese estadoy el segundo un setter (setTitle)o sea algo que me permita cambiar
+el valor de ese estado
+const [title, setTitle] =useState("");
+si no autocompleta importo import { useState } from "react";
+useState me permite especificar un valor inicial para mi estado y lo inicialice en 
+string vacio ("")
+9. Para ver el valor de title, despues de mi input tipo submit imprimo llamando la variable entre corchetes
+Ahi no imprime nada pero si lo pongo con algo adentro useState("hola") lo imprime
+10.Quiero mostrar ese valor hola o hi pero en el inputentonces ahi pongo un value = {}
+//title tiene el valor de hi y es como un getterque llamo en el input
+    //y setTitle me sirve para cambiar o setear el valor del estado o sea cambiar el hi x otra cosa
+11. voy a añadirle un evento al boton (input con submit type) para que al hacer click cambie el estado a otra cosa 
+<input onClick={(e)=>setTitle('Stefano')} type="submit" value="Create todo" className="buttonCreate"/>
+con eso se actualiza al nuevo valor pero vuelve y se refresca a hi 
+12. Para que quede fijo ese cambio o implementar un funcion de mas de una linea la definimos en el componente con handle y luego el nombre del evento 
+si va a haber pocos eventos en el componente
+
+function handleClick(e){
+    e.preventDefault();
+    setTitle('Stefano')
+}
+la funcion en linea que habia puesto la quito y llamo la funcion handleClick:
+<input onClick={handleClick} type="submit" value="Create todo" className="buttonCreate"/>
+
+ASI SE CAMBIA EL ESTADO PARA OBTENER Y ACTUALIZAR EL VALOR
+
+13. Para que cada vez que escriba en input se vaya actualizando el estado de title voy a implementar un evento
+tipo change y onchange
+Todas las funciones tienen su parametro (e) o event. Entonces c/vez q cambie el text voy a actualizar el title
+para obtener el valor del input o sea para capturar la cadena d text que voy escribiendo 
+en la funcion handlechange hago uso del parametro event y la propiedad value 
+function handleChange(event){
+    const value =event.taget.value;
+    setTitle(value);
+
+}
+<input onChange={handleChange} className="todoInput" value={title}/>
+
+- AHora quito el estado {title} que esta debajo del ultimo input porque si cuando escribo en 
+el cuadro de texto cambia lo que hay al lado del boton o sea el estado ya comprobe que funciona y 
+ya no lo necesito
+
+-Ahora voy a generar un todo y necesito un estado donde vaya guardando todos mis to dos
+genero un estado igual al primero que setie con hi pero lo inicializo con un arreglo vacio
+const [todos, setTodos] =useState([]);
+
+-Ahora necesito que al dar enter se inserte ese title o nombre de la tarea en todos
+para eso hago que el formulario escuche un evento 
+   <form className="todoCreateForm" onSubmit={handleSubmit}>
+
+   y creo una funcion handleSubmit con e.preventDefault trato de anular el comportamiento normal
+   del boton de tratar de subir inffo a un lugar especifico, con eso lo anulo-
+
+   -new todo es igual a un objeto con varias propiedades como un id a la que se le generarun id aleatorio 
+   con eso de crypto, el titulo que es una variable de estado a la que tambn se tiene acceso title y un completed
+   ahora hay que insertar ese objeto en el estado con setTodos(); 
+   pa eso creo variable temp y ahi hago una copia de todos con los tres puntos eso lo puedo hacer con
+   setTodos([...todos, newTodo]) que pide hacer una copia de los to dos ... y luego añadirle el nuevo todo
+   o tambien puedo hacerlo creando una variable k llame temp copiar el arreglo todos y agregar un elementosal inicio de
+   ese arreglo con unshift y setTodos(temp)
+
+   todos lo setie en un arreglo vacio en el segundo usestate
+
+   function handleSubmit(e){
+    e.preventDefault();
+    const newTodo = {
+        id: crypto.randomUUID(),
+        title: title,
+        completed: false
+    };
+    const temp= [...todos];
+    temp.unshift(newTodo);
+    setTodos(temp);
+}
+
+   -Al hacer click en el boton se sigue actualizando el hi por stefano por mi funcion handleclick entonces borro toda esa funcion
+   y donde la llamaba llamo mas bien a handle submit porque al final es el mismo comportamiento
+
+
+   ----mostrar elementos en un arreglo--------
+   -usaremos un recorrido, debajo de form creo un nuevo div con un classname todocontainer 
+   dentro imprimiremos todos los todos. map al parecer es mas facil que for en react
+   todos. me sugiere metodos porque es un arreglo map hace un recorrido de todos los elementos 
+
+y regresa una operacion y nosotros queremos regresar jsx  osea una estructura html que react pueda renderizar en la pantalla
+por eso se usa map y no for
+ <div className="todosContainer">
+            {
+                todos.map(item=>(
+                    <div key={item.id}>{item.title}</div>
+                ))
+            }
+        </div>
+
+        ahi ya esta basicamente lo escencial funcionando pero pa aprender mas a reciclar componentes
+
+        - creamos un archivo todo.js en components:
+        
+//Todo en mayusc en la funcion porque es componente
+export default function Todo({item}) {
+    return <div >{item.title}</div>
+}
+
+props.item.title le dice que entre las propiedades busque ell elemento  luego el titulopero actualice
+lo reemplazamos por item.title de una.
+y despues de eso 
+en el archivo todoApp.js ya podemos eliminar el div  <div key={item.id}>{item.title}</div> y mandamos
+llamar el nuevo componente asi<div className="todosContainer">
+            {
+                todos.map(item=>(
+                    <Todo />
+                ))
+            }
+        </div>
+        y arriba lo importo asi import Todo from "./todo";
+        y luego agrego la propiedad item y el key <Todo key={item.id} item={item}/>
+        creo botones de edit y delete en todo.js
+en todo creamos un nuevo estado y ponemos una funcion para que al dar click en editar cambie ese estado
+pongo un evento una funcion en linea , si usestate no se importa solo ponerlo
+
+si quisiera q la interfaz de mi app cambiara al pincahr editar imprimo ciertos elementos 
+dependiendo el estado de las variables.
+
+creo una nueva capa con classname todo o sea un div clasname todo me aparece error porque
+debe haber soo 1 capa padre o div classname y ahi tengo 2 entons borro el que ya habia hehco
+
+Me canse de explicar para mas info ver video 
